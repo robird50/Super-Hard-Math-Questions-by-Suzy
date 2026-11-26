@@ -58,6 +58,17 @@ jobs:
           assert count == 50
           p.write_text(json.dumps(data, separators=(',', ':')))
           PY
+      - name: Start fresh on every page load
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('site/scripts/c3main.js')
+          s = p.read_text()
+          old = 'self.localforage=new ea(new Qr("localforage"))'
+          assert s.count(old) == 1
+          s = s.replace(old, 'self.localforage=(()=>{const stores=new Map;function createInstance({name="localforage"}={}){if(stores.has(name))return stores.get(name);const data=new Map;const store={async getItem(key){return data.has(key)?structuredClone(data.get(key)):null},async setItem(key,value){data.set(key,structuredClone(value));return value},async removeItem(key){data.delete(key)},async clear(){data.clear()},async keys(){return [...data.keys()]},async length(){return data.size},async key(index){return [...data.keys()][index]??null}};stores.set(name,store);return store}return Object.assign(createInstance(),{createInstance})})()')
+          p.write_text(s)
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
