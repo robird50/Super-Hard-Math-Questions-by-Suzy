@@ -24,6 +24,17 @@ jobs:
           curl --fail --location --retry 5 --retry-delay 5 https://github.com/robird50/Super-Hard-Math-Questions-by-Suzy/releases/download/v1.0.0/suzysays-web.zip -o game.zip
           mkdir site
           unzip -q game.zip -d site
+      - name: Reduce rendering load
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('site/scripts/main.js')
+          s = p.read_text()
+          assert s.count('devicePixelRatio:window.devicePixelRatio') == 3
+          s = s.replace('devicePixelRatio:window.devicePixelRatio', 'devicePixelRatio:Math.min(window.devicePixelRatio,1,1280/window.innerWidth,720/window.innerHeight)')
+          s = s.replace('    setInterval(repairSettings, 16);', '')
+          p.write_text(s)
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
