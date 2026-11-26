@@ -34,6 +34,10 @@ jobs:
           s = s.replace('devicePixelRatio:window.devicePixelRatio', 'devicePixelRatio:Math.min(window.devicePixelRatio,1,1280/window.innerWidth,720/window.innerHeight)')
           s = s.replace('    setInterval(repairSettings, 16);', '')
           p.write_text(s)
+          p = Path('site/scripts/macos.js')
+          s = p.read_text()
+          cap = 'Object.defineProperty(window, "devicePixelRatio", { configurable: true, get: () => Math.min(1, 1280 / window.innerWidth, 720 / window.innerHeight) });'
+          p.write_text(cap + '\n' + s)
           PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
