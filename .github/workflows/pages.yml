@@ -1,0 +1,33 @@
+name: Publish game
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download game package
+        run: |
+          curl --fail --location --retry 5 --retry-delay 5 https://github.com/robird50/Super-Hard-Math-Questions-by-Suzy/releases/download/v1.0.0/suzysays-web.zip -o game.zip
+          mkdir site
+          unzip -q game.zip -d site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
