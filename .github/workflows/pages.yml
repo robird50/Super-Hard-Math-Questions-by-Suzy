@@ -39,6 +39,25 @@ jobs:
           cap = 'Object.defineProperty(window, "devicePixelRatio", { configurable: true, get: () => Math.min(1, 1280 / window.innerWidth, 720 / window.innerHeight) });'
           p.write_text(cap + '\n' + s)
           PY
+      - name: Replace TV horror frames
+        run: |
+          curl --fail --location --retry 5 https://github.com/robird50/Super-Hard-Math-Questions-by-Suzy/releases/download/v1.0.0/tv-replacement.png -o site/images/tv-replacement.png
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('site/data.json')
+          data = json.loads(p.read_text())
+          tv = next(o for o in data['project'][3] if o[0] == 'TVScreen')
+          size = Path('site/images/tv-replacement.png').stat().st_size
+          count = 0
+          for animation in tv[7]:
+              if animation[0] in ['GlitchA', 'GlitchB', 'GlitchC', 'Symbols', 'Error']:
+                  for frame in animation[7]:
+                      frame[:7] = ['images/tv-replacement.png', size, 0, 0, 864, 1536, False]
+                      count += 1
+          assert count == 50
+          p.write_text(json.dumps(data, separators=(',', ':')))
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
