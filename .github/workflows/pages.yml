@@ -110,6 +110,20 @@ jobs:
           frame[:7] = ['images/hers-truly-custom.png', Path('site/images/hers-truly-custom.png').stat().st_size, 0, 0, 1024, 1536, False]
           p.write_text(json.dumps(data, separators=(',', ':')))
           PY
+      - name: Replace singer photo poster
+        run: |
+          curl --fail --location --retry 5 https://github.com/robird50/Super-Hard-Math-Questions-by-Suzy/releases/download/v1.0.0/singer-custom.png -o site/images/singer-custom.png
+          python3 - <<'PY'
+          import json, struct
+          from pathlib import Path
+          p = Path('site/data.json')
+          data = json.loads(p.read_text())
+          image = Path('site/images/singer-custom.png')
+          width, height = struct.unpack('>II', image.read_bytes()[16:24])
+          poster = next(o for o in data['project'][3] if o[0] == 'HT_Poster')
+          poster[7][0][7][1][:7] = ['images/singer-custom.png', image.stat().st_size, 0, 0, width, height, False]
+          p.write_text(json.dumps(data, separators=(',', ':')))
+          PY
       - name: Version game scripts and data
         run: |
           python3 - <<'PY'
