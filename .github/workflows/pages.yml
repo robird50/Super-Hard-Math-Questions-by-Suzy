@@ -97,6 +97,19 @@ jobs:
           assert s.count(old) == 1
           p.write_text(s.replace(old,new))
           PY
+      - name: Replace Hers Truly bedroom poster
+        run: |
+          curl --fail --location --retry 5 https://github.com/robird50/Super-Hard-Math-Questions-by-Suzy/releases/download/v1.0.0/hers-truly-custom.png -o site/images/hers-truly-custom.png
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('site/data.json')
+          data = json.loads(p.read_text())
+          poster = next(o for o in data['project'][3] if o[0] == 'HT_Poster')
+          frame = poster[7][0][7][0]
+          frame[:7] = ['images/hers-truly-custom.png', Path('site/images/hers-truly-custom.png').stat().st_size, 0, 0, 1024, 1536, False]
+          p.write_text(json.dumps(data, separators=(',', ':')))
+          PY
       - name: Version game scripts and data
         run: |
           python3 - <<'PY'
