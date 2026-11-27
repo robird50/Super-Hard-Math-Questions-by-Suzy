@@ -80,6 +80,24 @@ jobs:
           assert s.count(old) == 1
           p.write_text(s.replace(old, new))
           PY
+      - name: Version game scripts and data
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          version = os.environ['GITHUB_SHA']
+          p = Path('site/index.html')
+          s = p.read_text()
+          for name in ['macos.js', 'main.js']:
+              s = s.replace('scripts/' + name + '"', 'scripts/' + name + '?v=' + version + '"')
+          p.write_text(s)
+          p = Path('site/scripts/main.js')
+          s = p.read_text().replace('scripts/c3main.js"', 'scripts/c3main.js?v=' + version + '"')
+          p.write_text(s)
+          p = Path('site/scripts/c3main.js')
+          s = p.read_text().replace('FetchJson("data.json")', 'FetchJson("data.json?v=' + version + '")')
+          p.write_text(s)
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
