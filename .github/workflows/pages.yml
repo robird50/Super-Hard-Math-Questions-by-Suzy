@@ -53,7 +53,7 @@ jobs:
           for animation in tv[7]:
               if animation[0] in ['GlitchA', 'GlitchB', 'GlitchC', 'Symbols', 'Error']:
                   for frame in animation[7]:
-                      frame[:7] = ['images/tv-replacement.png', size, 0, 0, 864, 1536, False]
+                      frame[:7] = ['images/tv-replacement.png', size, 0, 450, 864, 648, False]
                       count += 1
           assert count == 50
           p.write_text(json.dumps(data, separators=(',', ':')))
