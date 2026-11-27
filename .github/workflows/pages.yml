@@ -124,19 +124,6 @@ jobs:
           poster[7][0][7][1][:7] = ['images/singer-custom.png', image.stat().st_size, 0, 0, width, height, False]
           p.write_text(json.dumps(data, separators=(',', ':')))
           PY
-      - name: Replace horror music with user soundtrack
-        run: |
-          mkdir -p site/media
-          curl --fail --location --retry 5 https://github.com/robird50/Super-Hard-Math-Questions-by-Suzy/releases/download/v1.0.0/funk-basico.m4a -o site/media/funk-basico.m4a
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('site/scripts/main.js')
-          s = p.read_text()
-          old = 'async _Play(e){const t=e.originalUrl'
-          prefix = r'''const suzyMusicName=(e.originalUrl||e.url||"").split(/[?#]/)[0].split("/").pop().replace(/\.[^.]+$/,"").toLowerCase();if(["horrorstrings_1","wind_creepy","horror_amb_1","horror_amb_2","tense_amb","tense_amb_end","rhythmhorror","end_drone","titlesong","sting1","sting2","sting3","sting4","sting5","sting6","spook_1"].includes(suzyMusicName)){e.url=new URL("media/funk-basico.m4a",document.baseURI).href;e.type="audio/mp4";e.isMusic=true}'''
-          assert s.count(old) == 1
-          p.write_text(s.replace(old, 'async _Play(e){' + prefix + 'const t=e.originalUrl'))
-          PY
       - name: Version game scripts and data
         run: |
           python3 - <<'PY'
